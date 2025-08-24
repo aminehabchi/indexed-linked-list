@@ -1,3 +1,4 @@
+
 import java.util.*;
 
 interface LinkedList<T> {
@@ -32,7 +33,7 @@ class Node<T> {
     }
 }
 
-public class IndexedDoublyLinkedList<T> implements LinkedList<T> {
+class IndexedDoublyLinkedList<T> implements LinkedList<T> {
 
     private Node<T> head, tail;
     private int size;
@@ -64,7 +65,7 @@ public class IndexedDoublyLinkedList<T> implements LinkedList<T> {
 
     private void rebuildAfterRemove(int index) {
         int start = index / gap;
-        
+
         for (int i = start; i < indexNodes.size(); i++) {
             int targetIndex = i * gap;
             if (targetIndex >= size) {
@@ -77,12 +78,12 @@ public class IndexedDoublyLinkedList<T> implements LinkedList<T> {
 
     private void rebuildAfterAdd(int index) {
         int start = index / gap;
-        
+
         for (int i = start; i < indexNodes.size(); i++) {
             int targetIndex = i * gap;
             indexNodes.set(i, findNodeAtPosition(targetIndex));
         }
-        
+
         while ((indexNodes.size() * gap) < size) {
             int targetIndex = indexNodes.size() * gap;
             indexNodes.add(findNodeAtPosition(targetIndex));
@@ -90,8 +91,10 @@ public class IndexedDoublyLinkedList<T> implements LinkedList<T> {
     }
 
     private Node<T> findNodeAtPosition(int position) {
-        if (position >= size) return null;
-        
+        if (position >= size) {
+            return null;
+        }
+
         Node<T> current = head;
         for (int i = 0; i < position; i++) {
             current = current.next;
@@ -104,7 +107,6 @@ public class IndexedDoublyLinkedList<T> implements LinkedList<T> {
             throw new IndexOutOfBoundsException();
         }
 
-        // Use indexNodes for faster traversal
         int block = index / gap;
         Node<T> current;
         int pos;
@@ -134,7 +136,6 @@ public class IndexedDoublyLinkedList<T> implements LinkedList<T> {
         Node<T> newNode = new Node<>(value);
         if (tail == null) {
             head = tail = newNode;
-            // Add first index node
             indexNodes.add(head);
         } else {
             tail.next = newNode;
@@ -142,8 +143,7 @@ public class IndexedDoublyLinkedList<T> implements LinkedList<T> {
             tail = newNode;
         }
         size++;
-        
-        // Only rebuild if we have existing index nodes
+
         if (!indexNodes.isEmpty()) {
             rebuildAfterAdd(size - 1);
         }
@@ -168,7 +168,7 @@ public class IndexedDoublyLinkedList<T> implements LinkedList<T> {
         newNode.prev = prevNode;
         nextNode.prev = newNode;
         if (prevNode != null) {
-            prevNode.next = newNode; 
+            prevNode.next = newNode;
         } else {
             head = newNode;
         }
@@ -190,13 +190,13 @@ public class IndexedDoublyLinkedList<T> implements LinkedList<T> {
         Node<T> nextNode = node.next;
 
         if (prevNode != null) {
-            prevNode.next = nextNode; 
+            prevNode.next = nextNode;
         } else {
             head = nextNode;
         }
 
         if (nextNode != null) {
-            nextNode.prev = prevNode; 
+            nextNode.prev = prevNode;
         } else {
             tail = prevNode;
         }
@@ -249,6 +249,20 @@ public class IndexedDoublyLinkedList<T> implements LinkedList<T> {
         return -1;
     }
 
+    // Helper method for testing - shows the current state
+    public void printState() {
+        System.out.print("List: [");
+        Node<T> current = head;
+        while (current != null) {
+            System.out.print(current.data);
+            if (current.next != null) {
+                System.out.print(", ");
+            }
+            current = current.next;
+        }
+        System.out.println("] Size: " + size + ", IndexNodes: " + indexNodes.size());
+    }
+
     public static void main(String[] args) {
         IndexedDoublyLinkedList<Integer> list = new IndexedDoublyLinkedList<>(2);
         list.add(10);
@@ -259,7 +273,7 @@ public class IndexedDoublyLinkedList<T> implements LinkedList<T> {
         System.out.println(list.get(2)); // 20
         list.remove(1);
         System.out.println(list.get(1)); // 20
-        
+
         // Additional test cases
         System.out.println("Size: " + list.size()); // 2
         System.out.println("Contains 20: " + list.contains(20)); // true
